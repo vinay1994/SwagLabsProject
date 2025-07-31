@@ -1,0 +1,65 @@
+version: "3"
+services:
+  selenium-hub:
+    image: selenium/hub:latest
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    environment:
+      GRID_MAX_SESSION: 10  # Maximum number of concurrent sessions
+    networks:
+      - selenium-network
+
+  chrome-node:
+    image: selenium/node-chrome:latest
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      SE_EVENT_BUS_HOST: selenium-hub
+      SE_EVENT_BUS_PUBLISH_PORT: 4442
+      SE_EVENT_BUS_SUBSCRIBE_PORT: 4443
+      NODE_MAX_INSTANCES: 10
+      NODE_MAX_SESSION: 10
+    ports:
+      - "7900:7900"
+    volumes:
+      - /dev/shm:/dev/shm  # Mount shared memory for improved Chrome performance
+    networks:
+      - selenium-network
+    container_name: chrome-node
+
+  chrome_video:
+    image: selenium/video:ffmpeg-4.3.1-20230801
+    volumes:
+      - ./videos:/videos
+    depends_on:
+      - chrome-node
+    environment:
+      - DISPLAY_CONTAINER_NAME=chrome-node
+      - FILE_NAME=Interview-test_video.mp4
+    networks:
+      - selenium-network
+
+  Interview-test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - selenium-hub
+    environment:
+      - SELENIUM_GRID_URL=http://selenium-hub:4444/wd/hub
+      - TEST_GROUPS=sanity  # Default value, can be overridden
+      - ENV_PATH=prod        # Default value, can be overridden
+    networks:
+      - selenium-network
+    container_name: Interview-test
+    volumes:
+      - ./target:/app/target
+      - ./allure-report:/app/allure-report
+
+networks:
+  selenium-network:
+    driver: bridge

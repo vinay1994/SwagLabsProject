@@ -1,0 +1,25 @@
+package utils;
+
+public enum Options {
+    ID,
+    CLASSNAME,
+    NAME,
+    TAGNAME,
+    CSS,
+    XPATH,
+    LINKTEXT,
+    PARTIALTEXT,
+    CLOSE,
+    QUIT,
+    FORWARD,
+    BACKWARD,
+    HOME,
+    CATALOGUE,
+    MYLIBRARY,
+    MYRESOURCES,
+    RESOURCESMANAGEMENT,
+    MYUPLOADS,
+    SETTINGS,
+    CATEGORIES,
+    RESOURCEUPLOADINGMETADATA
+}

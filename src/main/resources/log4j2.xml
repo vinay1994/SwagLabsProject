@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" strict="true" name="XMLConfigTest">
+    <Properties>
+        <Property name="LOG_PATTERN">%d{dd:MM:yyyy HH:mm:ss.SSS} %-5level %logger{36} [%t] - %M %m%n</Property>
+        <Property name="basePath">Logs</Property>
+    </Properties>
+    <Appenders>
+        <!-- Console Appender -->
+        <Console name="Console" target="SYSTEM_OUT" follow="true">
+            <PatternLayout pattern="${LOG_PATTERN}"/>
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+        </Console>
+
+        <!-- Rolling File Appender -->
+        <RollingFile name="rollingFile" fileName="${basePath}/ExecutionLog.log"
+                     filePattern="${basePath}/application.%d{MM-dd-yy}.log.gz"
+                     ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>${LOG_PATTERN}</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+            <DefaultRolloverStrategy max="50"/>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <!-- Application-Specific Logger -->
+        <Logger name="testSuite" level="info" additivity="false">
+            <AppenderRef ref="rollingFile"/>
+            <AppenderRef ref="Console"/>
+        </Logger>
+
+        <!-- Root Logger -->
+        <Root level="info">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="rollingFile"/>
+        </Root>
+    </Loggers>
+</Configuration>
